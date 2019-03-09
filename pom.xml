@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+
+	<groupId>com.alex.algorithm</groupId>
+	<artifactId>alg</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<packaging>nar</packaging>
+	<dependencies>
+		<!-- native loader -->
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>native-lib-loader</artifactId>
+			<version>2.1.3</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
+	</properties>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.github.maven-nar</groupId>
+					<artifactId>nar-maven-plugin</artifactId>
+					<version>3.4.0</version>
+					<extensions>true</extensions>
+					<configuration>
+						<cpp>
+							<options>
+								<option>-fPIC</option>
+								<option>-I${project.basedir}</option>
+								<option>-g</option>
+								<option>-ggdb</option>
+							</options>
+						</cpp>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.2</version>
+					<configuration>
+						<generateBackupPoms>false</generateBackupPoms>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.3</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>2.4</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<resources>
+			<resource>
+				<directory>${project.basedir}</directory>
+				<includes>
+					<include>src/*.h</include>
+				</includes>
+				<targetPath>${project.build.directory}/nar/${project.artifactId}-${project.version}-noarch/include</targetPath>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.github.maven-nar</groupId>
+				<artifactId>nar-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<cpp>
+						<sourceDirectory>${project.basedir}</sourceDirectory>
+						<includes>
+							<include>src/*.cpp</include>
+						</includes>
+						<multiThreaded>true</multiThreaded>
+					</cpp>
+					<libraries>
+						<!-- if use shared, we need to configure the specified platform package 
+							in pom -->
+						<library>
+							<type>static</type>
+						</library>
+					</libraries>
+
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
